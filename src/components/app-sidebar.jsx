@@ -78,11 +78,11 @@ const data = {
       url: "/reports",
       icon: BarChartIcon,
     },
-    {
-      title: "Revenue Analytics",
-      url: "/analytics",
-      icon: ArrowUpCircleIcon,
-    },
+    // {
+    //   title: "Revenue Analytics",
+    //   url: "/analytics",
+    //   icon: ArrowUpCircleIcon,
+    // },
     {
       title: "Payments",
       url: "/payments",
