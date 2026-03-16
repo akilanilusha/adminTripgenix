@@ -15,7 +15,7 @@ import DriverManagement from "@/pages/DriverManagement/driverManagement";
 import AddDriver from "@/pages/DriverManagement/AddDriver";
 import EditDriver from "@/pages/DriverManagement/EditDriver";
 
-import Trip from "@/pages/tour-tabs/Trip";
+import Trip from "./pages/tour-tabs/Trip";
 import AccountSettings from "@/pages/AccountSettings";
 
 import AdminPackagesPage from "@/pages/DefaultPackages/AdminPackagesPage";
