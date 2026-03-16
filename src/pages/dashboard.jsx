@@ -13,6 +13,7 @@ import CalendarComponent from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import driverApi from "@/api/DriverApi";
 import bookingApi from "@/api/ToursApi";
+import axios from "axios"; // ✅ added
 
 export default function Dashboard() {
   // ================= STATES =================
@@ -66,8 +67,9 @@ export default function Dashboard() {
         date: tour.startDate?.split("T")[0],
         refId: tour.referenceId,
       }));
-      (console.log("Tour Start Date:", calendarData), // Debug log
-        setCalendarBookings(calendarData));
+
+      console.log("Tour Start Date:", calendarData);
+      setCalendarBookings(calendarData);
 
       // 4️⃣ Started Tours (ONGOING)
       const startedRes = await bookingApi.getStartedTours();
@@ -77,7 +79,14 @@ export default function Dashboard() {
       const newToursRes = await bookingApi.getNewTours();
       const newBookingsToday = newToursRes.data.length;
 
-      // 6️⃣ Weekly Revenue
+      // ================= WEEKLY REVENUE FROM EARNINGS API =================
+
+      const earningsRes = await axios.get(
+        "http://localhost:8095/api/v1/reportgenerate/earnings"
+      );
+
+      const earnings = earningsRes.data.data || [];
+
       const weekTemplate = [
         { day: "Mon", revenue: 0 },
         { day: "Tue", revenue: 0 },
@@ -88,14 +97,15 @@ export default function Dashboard() {
         { day: "Sun", revenue: 0 },
       ];
 
-      tours.forEach((tour) => {
-        if (!tour.startDate) return;
+      earnings.forEach((item) => {
+        if (!item.paymentDateTime) return;
 
-        const date = new Date(tour.startDate);
-        const dayIndex = date.getDay(); // 0=Sun
+        const date = new Date(item.paymentDateTime);
+        const dayIndex = date.getDay(); // 0 = Sunday
 
         const mapIndex = dayIndex === 0 ? 6 : dayIndex - 1;
-        weekTemplate[mapIndex].revenue += tour.totalCost || 0;
+
+        weekTemplate[mapIndex].revenue += Number(item.amount) || 0;
       });
 
       setWeeklyRevenue(weekTemplate);
@@ -164,7 +174,6 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-gray-800">
           TripGenix Admin Dashboard
         </h1>
-        {/* <p className="text-gray-500">Real-time tour management overview</p> */}
       </div>
 
       {/* ================= STATS ================= */}
@@ -185,7 +194,7 @@ export default function Dashboard() {
 
       {/* ================= CHART + CALENDAR ================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Weekly Revenue - 2/3 */}
+        {/* Weekly Revenue */}
         <div className="bg-white p-6 rounded-2xl shadow-md lg:col-span-2">
           <h2 className="text-lg font-semibold mb-4 text-gray-800">
             Weekly Revenue (LKR)
@@ -207,7 +216,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Calendar - 1/3 */}
+        {/* Calendar */}
         <div className="bg-white p-6 rounded-2xl shadow-md">
           <h2 className="text-lg font-semibold mb-4 text-gray-800">
             Tour Booking Calendar
@@ -236,7 +245,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ================= TODAY BOOKINGS TABLE ================= */}
+      {/* ================= TODAY BOOKINGS ================= */}
       <div className="bg-white p-6 rounded-2xl shadow-md">
         <h2 className="text-lg font-semibold mb-4 text-gray-800">
           Today Ongoing Bookings

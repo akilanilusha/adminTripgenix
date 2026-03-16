@@ -38,15 +38,11 @@ export default function AllTours() {
     const results = tours.filter((tour) => {
       // Reference ID
       const matchesRef = searchRef
-        ? tour.referenceId
-            ?.toLowerCase()
-            .includes(searchRef.toLowerCase())
+        ? tour.referenceId?.toLowerCase().includes(searchRef.toLowerCase())
         : true;
 
       // Created date
-      const createdDate = tour.createdAt
-        ? new Date(tour.createdAt)
-        : null;
+      const createdDate = tour.createdAt ? new Date(tour.createdAt) : null;
 
       const matchesStartDate = startDate
         ? createdDate && createdDate >= new Date(startDate)
@@ -57,16 +53,9 @@ export default function AllTours() {
         : true;
 
       // Status
-      const matchesStatus = status
-        ? tour.status === status
-        : true;
+      const matchesStatus = status ? tour.status === status : true;
 
-      return (
-        matchesRef &&
-        matchesStartDate &&
-        matchesEndDate &&
-        matchesStatus
-      );
+      return matchesRef && matchesStartDate && matchesEndDate && matchesStatus;
     });
 
     setFilteredTours(results);
@@ -191,16 +180,14 @@ export default function AllTours() {
                     {tour.referenceId}
                   </td>
                   <td className="px-4 py-3">{tour.bookerName}</td>
-                  <td className="px-4 py-3">
-                    {tour.route?.join(" → ")}
-                  </td>
+                  <td className="px-4 py-3">{tour.route?.join(" → ")}</td>
                   <td className="px-4 py-3">
                     {tour.createdAt?.substring(0, 10)}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadge(
-                        tour.status
+                        tour.status,
                       )}`}
                     >
                       {tour.status}
@@ -209,17 +196,13 @@ export default function AllTours() {
                   <td className="px-4 py-3">
                     <div className="flex justify-center gap-3">
                       <button
-                        onClick={() =>
-                          navigate(`/tours/view/${tour.bookingId}`)
-                        }
+                        onClick={() => navigate(`viewTour/${tour.bookingId}`)}
                         className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
                       >
                         <Eye size={16} />
                       </button>
                       <button
-                        onClick={() =>
-                          navigate(`/tours/edit/${tour.bookingId}`)
-                        }
+                        onClick={() => navigate(`edit/${tour.bookingId}`)}
                         className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700"
                       >
                         <Pencil size={16} />

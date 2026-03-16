@@ -51,7 +51,7 @@ export default function DriverConfirmed() {
 
     axios
       .get(
-        "http://localhost:8087/bookingservice/api/v1/get_driver_confirmed_bookings"
+        "http://localhost:8087/bookingservice/api/v1/get_driver_confirmed_bookings",
       )
       .then((res) => {
         setTours(res.data);
@@ -69,9 +69,7 @@ export default function DriverConfirmed() {
   const handleSearch = () => {
     const results = tours.filter((tour) => {
       const matchesRef = searchRef
-        ? tour.referenceId
-            ?.toLowerCase()
-            .includes(searchRef.toLowerCase())
+        ? tour.referenceId?.toLowerCase().includes(searchRef.toLowerCase())
         : true;
 
       const tourDate = tour.startDate ? new Date(tour.startDate) : null;
@@ -80,9 +78,7 @@ export default function DriverConfirmed() {
         ? tourDate >= new Date(startDate)
         : true;
 
-      const matchesEndDate = endDate
-        ? tourDate <= new Date(endDate)
-        : true;
+      const matchesEndDate = endDate ? tourDate <= new Date(endDate) : true;
 
       return matchesRef && matchesStartDate && matchesEndDate;
     });
@@ -123,7 +119,10 @@ export default function DriverConfirmed() {
         </div>
 
         <div className="relative ">
-          <Calendar className="absolute left-3 top-3.5 text-gray-400" size={18} />
+          <Calendar
+            className="absolute left-3 top-3.5 text-gray-400"
+            size={18}
+          />
           <input
             type="date"
             value={startDate}
@@ -133,7 +132,10 @@ export default function DriverConfirmed() {
         </div>
 
         <div className="relative">
-          <Calendar className="absolute left-3 top-3.5 text-gray-400" size={18} />
+          <Calendar
+            className="absolute left-3 top-3.5 text-gray-400"
+            size={18}
+          />
           <input
             type="date"
             value={endDate}
@@ -197,14 +199,12 @@ export default function DriverConfirmed() {
                       {tour.referenceId}
                     </td>
                     <td className="px-4 py-3">{tour.bookerName}</td>
-                    <td className="px-4 py-3">
-                      {tour.route?.join(" → ")}
-                    </td>
+                    <td className="px-4 py-3">{tour.route?.join(" → ")}</td>
                     <td className="px-4 py-3">
                       {tour.startDate?.substring(0, 10)}
                     </td>
                     <td className="px-4 py-3">
-                     <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
                         CONFIRMED
                       </span>
                     </td>
@@ -213,9 +213,7 @@ export default function DriverConfirmed() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
-                        onClick={() =>
-                          navigate(`/tours/view/${tour.bookingId}`)
-                        }
+                        onClick={() => navigate(`viewTour/${tour.bookingId}`)}
                         className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
                       >
                         <Eye size={16} />

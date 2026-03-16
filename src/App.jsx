@@ -48,6 +48,8 @@ import ReportPage from "./pages/CompanyReports/ReportPage";
 import EarningReports from "./pages/CompanyReports/EarningReports";
 import TourReports from "./pages/CompanyReports/TourReports";
 
+import ViewTourAll from "./pages/tour-tabs/ViewTour";
+
 function App() {
   const { isAuthenticated } = useAuth();
 
@@ -131,6 +133,7 @@ function App() {
                       element={<EmailSendView />}
                     />
                     <Route path="view/:id" element={<ViewTour />} />
+                    <Route path="viewTour/:id" element={<ViewTourAll />} />
                     <Route path="edit/:id" element={<EditTour />} />
                   </Route>
 

@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Search,
-  Calendar,
-  Eye,
-  MailCheck,
-} from "lucide-react";
+import { Search, Calendar, Eye, MailCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import bookingApi from "../../api/ToursApi";
 import { Client } from "@stomp/stompjs";
@@ -77,9 +72,7 @@ export default function ConfirmedTours() {
         ? tourDate >= new Date(startDate)
         : true;
 
-      const matchesEndDate = endDate
-        ? tourDate <= new Date(endDate)
-        : true;
+      const matchesEndDate = endDate ? tourDate <= new Date(endDate) : true;
 
       return matchesRef && matchesStartDate && matchesEndDate;
     });
@@ -99,7 +92,6 @@ export default function ConfirmedTours() {
   ============================= */
   return (
     <div className="space-y-6">
-
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-gray-900">
@@ -121,7 +113,10 @@ export default function ConfirmedTours() {
         </div>
 
         <div className="relative">
-          <Calendar className="absolute left-3 top-3.5 text-gray-400" size={18} />
+          <Calendar
+            className="absolute left-3 top-3.5 text-gray-400"
+            size={18}
+          />
           <input
             type="date"
             value={startDate}
@@ -131,7 +126,10 @@ export default function ConfirmedTours() {
         </div>
 
         <div className="relative">
-          <Calendar className="absolute left-3 top-3.5 text-gray-400" size={18} />
+          <Calendar
+            className="absolute left-3 top-3.5 text-gray-400"
+            size={18}
+          />
           <input
             type="date"
             value={endDate}
@@ -195,9 +193,7 @@ export default function ConfirmedTours() {
                       {tour.referenceId}
                     </td>
                     <td className="px-4 py-3">{tour.bookerName}</td>
-                    <td className="px-4 py-3">
-                      {tour.route?.join(" → ")}
-                    </td>
+                    <td className="px-4 py-3">{tour.route?.join(" → ")}</td>
                     <td className="px-4 py-3">
                       {tour.startDate?.substring(0, 10)}
                     </td>
@@ -211,9 +207,7 @@ export default function ConfirmedTours() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
-                        onClick={() =>
-                          navigate(`/tours/view/${tour.bookingId}`)
-                        }
+                        onClick={() => navigate(`viewTour/${tour.bookingId}`)}
                         className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
                       >
                         <Eye size={16} />
