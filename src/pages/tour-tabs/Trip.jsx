@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Trips from "./Trips";
+import Trips from "./trips";
 import EmailSendView from "./emailsendView";
 export default function Trip() {
   return (
