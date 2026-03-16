@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb";
 import bookingApi from "@/api/ToursApi";
 import vehicleApi from "@/api/vehicleApi";
-import driverApi from "@/api/driverApi";
+import driverApi from "@/api/DriverApi";
 import RouteMap from "./RouteMap";
 
 import { Input } from "@/components/ui/input";
