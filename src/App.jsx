@@ -32,8 +32,7 @@ import EditTourGuide from "./pages/TourGuideManagement/EditTourGuide";
 import ViewTourGuide from "./pages/TourGuideManagement/ViewTourGuide";
 import AddNewTour from "./pages/tour-tabs/AddNewTour";
 import EmailSendView from "./pages/tour-tabs/emailsendView";
-import ViewTour from "./pages/tour-tabs/viewNewTours";
-
+import ViewTour from "./pages/tour-tabs/ViewNewTours";
 import UserManagement from "./pages/UserManagement/UserManagement";
 import AddUser from "./pages/UserManagement/AddUser";
 import EditUser from "./pages/UserManagement/EditUser";
