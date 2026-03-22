@@ -28,64 +28,25 @@ function TourGuideManagement() {
 
   const goTo = useNavigator();
 
-  // ✅ LOAD ONCE
+  // ✅ LOAD DATA
   useEffect(() => {
     loadGuides();
   }, []);
 
-  // async function loadGuides() {
-  //   try {
-  //     const res = await tourGuideApi.getAllGuides();
-  //     console.log("RAW GUIDE RESPONSE:", res.data);
-
-  //     const list = Array.isArray(res.data) ? res.data : res.data?.data || [];
-
-  //     // ✅ NORMALIZE ID FIELD
-  //     const normalized = res.data.map((g) => ({
-  //       ...g,
-  //       guideId: g.tourGuideId,
-  //     }));
-
-  //     setGuides(normalized);
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Failed to load tour guides");
-  //   }
-  // }
-
-  // async function handleDeleteConfirm() {
-  //   if (!selectedGuide) return;
-
-  //   try {
-  //     setIsDeleting(true);
-  //     await tourGuideApi.deleteGuide(selectedGuide.guideId);
-  //     toast.success("Guide deleted");
-
-  //     setDeleteModalOpen(false);
-  //     loadGuides();
-  //   } catch {
-  //     toast.error("Delete failed");
-  //   } finally {
-  //     setIsDeleting(false);
-  //   }
-  // }
-
   async function loadGuides() {
     try {
       const res = await tourGuideApi.getAllGuides();
-      console.log("RAW GUIDE RESPONSE:", res.data);
 
-      const list = Array.isArray(res.data) ? res.data : res.data?.data || [];
+      const list = Array.isArray(res.data) ? res.data : [];
 
-      // ✅ FIX: Use consistent ID field - tourGuideId is the primary key
       const normalized = list.map((g) => ({
         ...g,
-        guideId: g.tourGuideId || g.tourId || g.guideId, // Fallback chain
+        guideId: g.tourGuideId, // backend primary key
       }));
 
       setGuides(normalized);
     } catch (err) {
-      console.error("Load guides error:", err.response?.data || err);
+      console.error(err);
       toast.error("Failed to load tour guides");
     }
   }
@@ -95,21 +56,20 @@ function TourGuideManagement() {
 
     try {
       setIsDeleting(true);
-      console.log("Deleting guide with ID:", selectedGuide.guideId); // Debug log
       await tourGuideApi.deleteGuide(selectedGuide.guideId);
       toast.success("Guide deleted");
 
       setDeleteModalOpen(false);
       loadGuides();
     } catch (err) {
-      console.error("Delete error:", err.response?.data || err);
-      toast.error(err.response?.data?.message || "Delete failed");
+      console.error(err);
+      toast.error("Delete failed");
     } finally {
       setIsDeleting(false);
     }
   }
 
-  // ✅ SAFE COLUMNS
+  // ✅ UPDATED COLUMNS (MATCH BACKEND)
   const guideColumns = [
     {
       id: "drag",
@@ -136,41 +96,59 @@ function TourGuideManagement() {
       ),
     },
 
-    // IMAGE
+    // ✅ IMAGE
     {
       header: "Guide",
       cell: ({ row }) => (
         <img
-          src={row.original.image || row.original.guideImage}
+          src={row.original.image}
           alt="guide"
           className="w-10 h-10 rounded-full object-cover"
         />
       ),
     },
 
-    // NAME
+    // ✅ NAME
     {
+      accessorKey: "name",
       header: "Full Name",
+    },
+
+    // ✅ NIC
+    {
+      accessorKey: "nic",
+      header: "NIC",
+    },
+
+    // ✅ LANGUAGES
+    {
+      accessorKey: "languages",
+      header: "Languages",
+    },
+
+    // ✅ EXPERIENCE
+    {
+      accessorKey: "experienceYears",
+      header: "Experience (Years)",
+    },
+
+    // ✅ PRICE PER DAY
+    {
+      accessorKey: "pricePerDay",
+      header: "Price Per Day (LKR)",
       cell: ({ row }) =>
-        row.original.name ||
-        `${row.original.firstName || ""} ${row.original.lastName || ""}`,
+        row.original.pricePerDay
+          ? `Rs. ${row.original.pricePerDay}`
+          : "N/A",
     },
 
-    { accessorKey: "nic", header: "NIC" },
-    { accessorKey: "language", header: "Language" },
-    { accessorKey: "reviewId", header: "Review ID" },
+    // ✅ CONTACT
     {
-      accessorKey: "hourlyRate",
-      header: "Hourly Rate (LKR)",
-      cell: ({ row }) => row.original.hourlyRate ? `${row.original.hourlyRate}` : "N/A"
+      accessorKey: "contactNumber",
+      header: "Contact",
     },
 
-    {
-      header: "Status",
-      cell: ({ row }) => (row.original.status ? "Active" : "Inactive"),
-    },
-
-    // ACTIONS
+    // ✅ ACTIONS
     {
       id: "actions",
       cell: ({ row }) => (
@@ -187,6 +165,7 @@ function TourGuideManagement() {
             >
               View
             </DropdownMenuItem>
+
             <DropdownMenuItem
               onClick={() => goTo(`edit/${row.original.guideId}`)}
             >
@@ -242,12 +221,7 @@ function TourGuideManagement() {
         isDeleting={isDeleting}
         title="Delete Guide"
         message="Are you sure you want to delete"
-        itemName={
-          selectedGuide
-            ? selectedGuide.name ||
-            `${selectedGuide.firstName} ${selectedGuide.lastName}`
-            : ""
-        }
+        itemName={selectedGuide?.name || ""}
       />
     </div>
   );

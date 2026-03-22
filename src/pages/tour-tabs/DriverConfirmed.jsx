@@ -26,7 +26,7 @@ export default function DriverConfirmed() {
   ============================= */
   useEffect(() => {
     const client = new Client({
-      brokerURL: "ws://localhost:8081/ws",
+      brokerURL: "ws://13.218.211.254:8081/ws",
       reconnectDelay: 5000,
 
       onConnect: () => {
@@ -51,7 +51,7 @@ export default function DriverConfirmed() {
 
     axios
       .get(
-        "http://localhost:8087/bookingservice/api/v1/get_driver_confirmed_bookings",
+        "http://13.218.211.254:8087/bookingservice/api/v1/get_driver_confirmed_bookings",
       )
       .then((res) => {
         setTours(res.data);

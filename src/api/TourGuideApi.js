@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8089/api/v1";
+const BASE_URL = "http://13.218.211.254:8089/api/v1";
 
 const tourGuideApi = {
   getAllGuides() {
