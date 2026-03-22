@@ -167,7 +167,7 @@ export default function AccountSettings() {
           </section>
 
           {/* DELETE ACCOUNT */}
-          <section className="p-6 bg-white/70 shadow-lg rounded-2xl border border-red-200 transition hover:shadow-xl">
+          {/* <section className="p-6 bg-white/70 shadow-lg rounded-2xl border border-red-200 transition hover:shadow-xl">
             <h2 className="text-2xl font-semibold text-red-700 mb-3">
               Account Deletion
             </h2>
@@ -183,7 +183,7 @@ export default function AccountSettings() {
             >
               Delete Account
             </button>
-          </section>
+          </section> */}
         </div>
       </div>
       <DeleteConfirmModal

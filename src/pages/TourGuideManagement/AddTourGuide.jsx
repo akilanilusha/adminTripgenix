@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import uploadToSupabase from "@/utils/uploadImage";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb";
 import { toast } from "sonner";
+import Select from "react-select";
+import tourGuideApi from "@/api/TourGuideApi";
 
 import {
   Form,
@@ -19,26 +21,39 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import useNavigator from "@/hooks/use-navigator";
-import Select from "react-select";
-import driverApi from "@/api/DriverApi";
-import tourGuideApi from "@/api/TourGuideApi";
 
+const LANGUAGE_OPTIONS = [
+  { value: "English", label: "English" },
+  { value: "Sinhala", label: "Sinhala" },
+  { value: "Tamil", label: "Tamil" },
+  { value: "Hindi", label: "Hindi" },
+  { value: "French", label: "French" },
+  { value: "German", label: "German" },
+  { value: "Spanish", label: "Spanish" },
+  { value: "Chinese", label: "Chinese" },
+  { value: "Japanese", label: "Japanese" },
+  { value: "Korean", label: "Korean" },
+  { value: "Arabic", label: "Arabic" },
+  { value: "Russian", label: "Russian" },
+  { value: "Italian", label: "Italian" },
+  { value: "Dutch", label: "Dutch" },
+  { value: "Portuguese", label: "Portuguese" },
+  { value: "Malay", label: "Malay" },
+  { value: "Thai", label: "Thai" },
+  { value: "Indonesian", label: "Indonesian" },
+  { value: "Turkish", label: "Turkish" },
+  { value: "Bengali", label: "Bengali" },
+];
 // ---------- schema ----------
 const schema = z.object({
   name: z.string().min(1, "Name required"),
-  nic: z.string().optional(),
-  language: z.string().optional(),
-  reviewId: z.coerce.number().optional(),
+  nic: z.string().min(1, "NIC required"),
+  description: z.string().min(1, "Description required"),
+  pricePerDay: z.coerce.number().min(0, "Price must be positive"),
+  contactNumber: z.string().min(1, "Contact number required"),
+  experienceYears: z.coerce.number().min(0, "Invalid experience"),
+  languages: z.string().min(1, "Languages required"),
   image: z.instanceof(File, { message: "Image required" }),
-  status: z.boolean(),
-  driver: z
-    .object({
-      value: z.number(),
-      label: z.string(),
-    })
-    .nullable()
-    .optional(),
-  hourlyRate: z.coerce.number().min(0, "Rate must be positive"),
 });
 
 export default function AddTourGuide() {
@@ -49,39 +64,14 @@ export default function AddTourGuide() {
     defaultValues: {
       name: "",
       nic: "",
-      language: "",
-      reviewId: undefined,
+      description: "",
+      pricePerDay: "",
+      contactNumber: "",
+      experienceYears: "",
+      languages: "",
       image: null,
-      status: true,
-      driver: null,
-      hourlyRate: "",
     },
   });
-
-  const [driverOptions, setDriverOptions] = React.useState([]);
-
-  // ---------- load drivers ----------
-  useEffect(() => {
-    async function loadDrivers() {
-      try {
-        const res = await driverApi.getAllDrivers();
-        const items = res?.data || [];
-
-        console.log("Loaded drivers:", items);
-
-        const options = items.map((d) => ({
-          value: Number(d.driverId), // ✅ from your console screenshot
-          label: `${d.firstName} ${d.lastName}`,
-        }));
-
-        setDriverOptions(options);
-      } catch (e) {
-        console.error("Driver load failed", e);
-      }
-    }
-
-    loadDrivers();
-  }, []);
 
   // ---------- submit ----------
   async function onSubmit(values) {
@@ -90,19 +80,18 @@ export default function AddTourGuide() {
         (async () => {
           const imageUrl = await uploadToSupabase(
             values.image,
-            `guide-images/${values.nic || values.name}`
+            `guide-images/${values.nic || values.name}`,
           );
 
-          // ✅ send driver ID only
           const payload = {
             name: values.name,
             nic: values.nic,
-            language: values.language,
-            reviewId: values.reviewId ?? null,
+            description: values.description,
+            pricePerDay: values.pricePerDay,
+            contactNumber: values.contactNumber,
             image: imageUrl,
-            status: values.status,
-            driver: values.driver ? values.driver.value : null,
-            hourlyRate: values.hourlyRate,
+            experienceYears: values.experienceYears,
+            languages: values.languages,
           };
 
           console.log("Submitting payload:", payload);
@@ -118,10 +107,17 @@ export default function AddTourGuide() {
             return "Tour guide created";
           },
           error: (err) => {
-            console.log("SERVER ERROR:", err?.response?.data);
-            return "Save failed";
+            console.error("SERVER ERROR:", err?.response?.data);
+
+            // show backend message if exists
+            return (
+              err?.response?.data?.message ||
+              err?.response?.data ||
+              err.message ||
+              "Failed to create tour guide"
+            );
           },
-        }
+        },
       );
     } catch (err) {
       console.error(err);
@@ -131,10 +127,7 @@ export default function AddTourGuide() {
   // ---------- UI ----------
   return (
     <div className="p-6">
-      <PageBreadcrumb
-        title="Add Tour Guide"
-        paths={["Tour Guide Management", []]}
-      />
+      <PageBreadcrumb title="Add Tour Guide" />
 
       <div className="bg-white border rounded-md shadow p-6">
         <h2 className="text-xl font-semibold mb-4">Guide Details</h2>
@@ -142,7 +135,6 @@ export default function AddTourGuide() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
               {/* NAME */}
               <FormField
                 name="name"
@@ -150,7 +142,9 @@ export default function AddTourGuide() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
-                    <FormControl><Input {...field} /></FormControl>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -163,119 +157,85 @@ export default function AddTourGuide() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>NIC</FormLabel>
-                    <FormControl><Input {...field} /></FormControl>
-                  </FormItem>
-                )}
-              />
-
-              {/* LANGUAGE */}
-              <FormField
-                name="language"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Language</FormLabel>
                     <FormControl>
-                      <Select
-                        options={[
-                          { value: "English", label: "English" },
-                          { value: "Sinhala", label: "Sinhala" },
-                        ]}
-                        value={
-                          field.value
-                            ? { value: field.value, label: field.value }
-                            : null
-                        }
-                        onChange={(opt) => field.onChange(opt ? opt.value : "")}
-                        placeholder="Select Language"
-                      />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* REVIEW ID */}
+              {/* CONTACT */}
               <FormField
-                name="reviewId"
+                name="contactNumber"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Review ID</FormLabel>
+                    <FormLabel>Contact Number</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        value={field.value ?? ""}
-                        onChange={(e) =>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* EXPERIENCE */}
+              <FormField
+                name="experienceYears"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Experience (Years)</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* PRICE */}
+              <FormField
+                name="pricePerDay"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price Per Day (LKR)</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* LANGUAGES */}
+              <FormField
+                name="languages"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Languages</FormLabel>
+                    <FormControl>
+                      <Select
+                        options={LANGUAGE_OPTIONS}
+                        isMulti
+                        placeholder="Select languages..."
+                        value={
+                          field.value
+                            ? field.value.split(", ").map((lang) => ({
+                                value: lang,
+                                label: lang,
+                              }))
+                            : []
+                        }
+                        onChange={(selected) =>
                           field.onChange(
-                            e.target.value === ""
-                              ? undefined
-                              : Number(e.target.value)
+                            selected.map((item) => item.value).join(", "),
                           )
                         }
                       />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              {/* STATUS */}
-              <FormField
-                name="status"
-                control={form.control}
-                render={({ field }) => {
-                  const opts = [
-                    { value: true, label: "Active" },
-                    { value: false, label: "Inactive" },
-                  ];
-                  return (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <FormControl>
-                        <Select
-                          options={opts}
-                          value={opts.find(o => o.value === field.value)}
-                          onChange={(opt) => field.onChange(opt.value)}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  );
-                }}
-              />
-
-              {/* ✅ DRIVER — FULLY FIXED */}
-              <FormField
-                name="driver"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Associate Driver</FormLabel>
-                    <FormControl>
-                      <Select
-                        options={driverOptions}
-                        isClearable
-                        value={
-                          driverOptions.find(
-                            (opt) => opt.value === field.value?.value
-                          ) || null
-                        }
-                        onChange={(opt) => field.onChange(opt)}
-                        getOptionValue={(o) => String(o.value)}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              {/* HOURLY RATE */}
-              <FormField
-                name="hourlyRate"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hourly Rate (LKR)</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -302,8 +262,26 @@ export default function AddTourGuide() {
                   </FormItem>
                 )}
               />
-
             </div>
+
+            {/* DESCRIPTION FULL WIDTH */}
+            <FormField
+              name="description"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <textarea
+                      className="w-full border rounded p-2"
+                      rows={4}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex justify-end gap-4">
               <Button
@@ -321,7 +299,6 @@ export default function AddTourGuide() {
                 Save Guide
               </Button>
             </div>
-
           </form>
         </Form>
       </div>

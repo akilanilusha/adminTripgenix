@@ -15,7 +15,7 @@ function DriverPayments() {
   const loadPayments = async () => {
   try {
     const res = await axios.get(
-      "http://localhost:8087/paymentcontroller/driver-payments"
+      "http://13.218.211.254:8087/paymentcontroller/driver-payments"
     );
 
     console.log("Driver Payments:", res.data);

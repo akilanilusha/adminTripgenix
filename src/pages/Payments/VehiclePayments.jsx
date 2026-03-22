@@ -13,7 +13,7 @@ function VehiclePayments() {
   const loadPayments = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8087/paymentcontroller/vehicel-payments"
+        "http://13.218.211.254:8087/paymentcontroller/vehicel-payments"
       );
 
       console.log("Vehicle Payments:", res.data);
@@ -44,7 +44,7 @@ function VehiclePayments() {
   const handleMarkAsPaid = async (id) => {
     try {
       await axios.put(
-        `http://localhost:8087/paymentcontroller/vehicle-payments/${id}/mark-paid`
+        `http://13.218.211.254:8087/paymentcontroller/vehicle-payments/${id}/mark-paid`
       );
 
       loadPayments();
