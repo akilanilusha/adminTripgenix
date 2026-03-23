@@ -12,7 +12,7 @@ function TourReports() {
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const API = "http://13.218.211.254:8095/api/v1/reportgenerate/tours";
+  const API = "http://localhost:8095/api/v1/reportgenerate/tours";
 
   /* ============================
      LOAD ALL TOURS

@@ -82,7 +82,7 @@ export default function Dashboard() {
       // ================= WEEKLY REVENUE FROM EARNINGS API =================
 
       const earningsRes = await axios.get(
-        "http://13.218.211.254:8095/api/v1/reportgenerate/earnings"
+        "http://localhost:8095/api/v1/reportgenerate/earnings"
       );
 
       const earnings = earningsRes.data.data || [];

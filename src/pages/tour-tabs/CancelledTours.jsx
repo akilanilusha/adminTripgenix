@@ -26,7 +26,7 @@ export default function CancelledTours() {
   ============================= */
   useEffect(() => {
     const client = new Client({
-      brokerURL: "ws://13.218.211.254:8087/ws",
+      brokerURL: "ws://localhost:8087/ws",
       reconnectDelay: 5000,
 
       onConnect: () => {

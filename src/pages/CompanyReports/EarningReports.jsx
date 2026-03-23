@@ -13,7 +13,7 @@ function EarningReports() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const API = "http://13.218.211.254:8095/api/v1/reportgenerate/earnings";
+  const API = "http://localhost:8095/api/v1/reportgenerate/earnings";
 
   /* ======================
      LOAD ALL DATA ON PAGE LOAD
